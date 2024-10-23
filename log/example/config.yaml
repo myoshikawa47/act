@@ -1,0 +1,37 @@
+backbone: resnet18
+camera_names: &id001
+- cam1
+- cam2
+ckpt_dir: ./log/example
+dataset_dir: dir/to/data
+dec_layers: 7
+device: cuda:0
+dim_feedforward: 3200
+enc_layers: 4
+episode_len: 400
+hidden_dim: 512
+kl_weight: 10
+lr: 1.0e-05
+lr_backbone: 1.0e-05
+nheads: 8
+num_epochs: 10000
+num_queries: 100
+onscreen_render: false
+policy_class: ACT
+policy_config:
+  backbone: resnet18
+  camera_names: *id001
+  dec_layers: 7
+  dim_feedforward: 3200
+  enc_layers: 4
+  hidden_dim: 512
+  kl_weight: 10
+  lr: 1.0e-05
+  lr_backbone: 1.0e-05
+  nheads: 8
+  num_queries: 100
+real_robot: true
+seed: 0
+state_dim: 4
+task_name: null
+temporal_agg: true

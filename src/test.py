@@ -55,7 +55,7 @@ for cam_name in config['camera_names']:
 images = np.array(images)
 print(images.shape)
 episode_len = images.shape[1]
-robot_states = np.load('{}/{}/robot_states.npy'.format(config['dataset_dir'], mode))[idx]
+robot_states = np.load('{}/{}/robot_states.npy'.format(config['dataset_dir'], mode))[idx] # TODO
 robot_state_dim = robot_states.shape[-1] # 4
 
 
@@ -156,7 +156,7 @@ target_qpos = np.array(target_qpos_list)
 plt.xlim(0,nloop - 1)
 plt.plot(robot_states[1:], linestyle='dashed', c='k')
 plt.plot(target_qpos[:-1])
-plt.title('TA: {}, num_queries: {}'.format(config['temporal_agg'], config['num_queries']))
+plt.title('temporal ensenble: {}, num_queries: {}'.format(config['temporal_agg'], config['num_queries']))
 tag = os.path.split((os.path.split(args.ckpt_path)[0]))[1]
 epoch = os.path.splitext(os.path.basename(args.ckpt_path))[0]
 plt.savefig('./output/{}_{}_{}_{}.png'.format(tag, epoch, mode, idx))
