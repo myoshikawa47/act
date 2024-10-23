@@ -1,0 +1,15 @@
+<launch>
+
+<arg name='ckpt_path' default='path/to/ckpt'/>
+<arg name='control_freq' default='100'/>
+<arg name='inference_freq' default='10'/>
+<arg name='device' default='0'/>
+
+<node name='$(anon runtime_node)' pkg='runtime_node' type='rt_control_ACT_w_interpolation.py' ns='torobo' output='screen'>
+    <param name='ckpt_path' value='$(arg ckpt_path)'/>
+    <param name='control_freq' value='$(arg control_freq)'/>
+    <param name='inference_freq' value='$(arg inference_freq)'/>
+    <param name='device' value='$(arg device)'/>
+</node>
+
+</launch>
