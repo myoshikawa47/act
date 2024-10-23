@@ -15,7 +15,7 @@ dataset_dir/
 
 
 ### 修正が必要なパラメータ
-- src/imitate_episode.py  
+- src/imitate_episodes.py  
     - in main() L67  
         - camera_names (=['cam1', 'cam2'])  
     - in L448~ parser  
@@ -39,4 +39,4 @@ dataset_dir/
 `(aloha) usr@rtx01:~/act$ python3 ./src/imitate_episode.py --temporal_agg --device 0`
 
 ### オフラインテスト
-`(aloha) usr@rtx01:~/act$ python3 ./src/test.py --ckpt_path ./log/\<tagname\>/policy_best.ckpt --device 0`
+`(aloha) usr@rtx01:~/act$ python3 ./src/test.py --ckpt_path ./log/<tagname>/policy_best.ckpt --device 0`
