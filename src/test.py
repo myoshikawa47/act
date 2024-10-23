@@ -66,7 +66,6 @@ set_seed(1)
 policy_class = config['policy_class']
 
 policy = make_policy(policy_class, config)
-policy = make_policy(policy_class, config)
 policy.load_state_dict(torch.load(args.ckpt_path, map_location=torch.device(device)))
 policy.eval()
 
