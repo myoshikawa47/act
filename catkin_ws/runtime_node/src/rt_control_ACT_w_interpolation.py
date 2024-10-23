@@ -177,7 +177,7 @@ class RTControl(Torobo):
         self.hand_sleep()
 
 
-    def predict_10Hz(self, infer_id):
+    def prediction(self, infer_id):
         if infer_id % self.query_frequency == 0:
             img_t = self.current_image.transpose(2, 0, 1)
             img_t = torch.from_numpy(img_t / 255.0).float().unsqueeze(0).unsqueeze(0).to(self.device) # (batch(=1), camera_num(=1), channel, height, width)
@@ -255,7 +255,7 @@ class RTControl(Torobo):
             for loop_ct in range(nloop):
                 if loop_ct % int(self.control_freq / self.inference_freq) == 0:
                     infer_id = loop_ct // int(self.control_freq / self.inference_freq)
-                    _target_joint = self.predict_10Hz(infer_id)
+                    _target_joint = self.prediction(infer_id)
                     n_sample = int(self.control_freq/self.inference_freq) + 1
                     target_joint = np.linspace(self.current_right_arm, _target_joint, n_sample)[1:]
 
