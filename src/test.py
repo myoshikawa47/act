@@ -30,8 +30,9 @@ e = IPython.embed
 # argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument("--ckpt_path", type=str)
-parser.add_argument("--mode", type=str, default="test")
-parser.add_argument("--idx", type=int, default=1)
+parser.add_argument("--mode", type=str, default="train")
+parser.add_argument("--idx", type=int, default=0)
+parser.add_argument("--output", choices=('image', 'video'), default='image')
 parser.add_argument("--device", type=int, default=0)
 
 args = parser.parse_args()
@@ -124,39 +125,41 @@ with torch.inference_mode():
 
 target_qpos = np.array(target_qpos_list)
 
-# # plot images
-# T = len(images)
-# fig, ax = plt.subplots(1, 2, figsize=(12, 5), dpi=60)
+
+# plot images
+def anim_update(i):
+    for j in range(camera_num + 1):
+        ax[j].cla()
+
+    # plot camera image
+    for camera_id in range(camera_num):
+        ax[camera_id].imshow(images[camera_id, i, :, :, ::-1])
+        ax[camera_id].axis("off")
+        ax[camera_id].set_title("{}".format(config['camera_names'][camera_id]))
+
+    # plot pose
+    ax[-1].set_xlim(0, T)
+    ax[-1].plot(robot_states[1:], linestyle="dashed", c="k")
+    for robot_state_idx in range(robot_state_dim):
+        ax[-1].plot(np.arange(i + 1), target_qpos[: i + 1, robot_state_idx])
+    ax[-1].set_xlabel("Step")
+    ax[-1].set_title("Robot States")
 
 
-# def anim_update(i):
-#     for j in range(2):
-#         ax[j].cla()
-
-#     # plot camera image
-#     ax[0].imshow(images[i, :, :, ::-1])
-#     ax[0].axis("off")
-#     ax[0].set_title("Input image")
-
-#     # plot pose
-#     # ax[2].set_ylim(-np.pi / 2, np.pi / 2)
-#     # ax[2].set_ylim(-2.0, 2.0)
-#     ax[1].set_xlim(0, T)
-#     ax[1].plot(robot_states[1:], linestyle="dashed", c="k")
-#     for robot_state_idx in range(robot_state_dim):
-#         ax[1].plot(np.arange(i + 1), target_qpos[: i + 1, robot_state_idx])
-#     ax[1].set_xlabel("Step")
-#     ax[1].set_title("Robot States")
-
-
-# ani = anim.FuncAnimation(fig, anim_update, frames=T)
-# ani.save("/home/yoshikawa/job/2024/airec/ACT/output/{}_{}_{}.mp4".format(os.path.split(args['ckpt_path'])[-1], args['mode'], idx), fps=10, writer="ffmpeg")
-
-# plot image
-plt.xlim(0,nloop - 1)
-plt.plot(robot_states[1:], linestyle='dashed', c='k')
-plt.plot(target_qpos[:-1])
-plt.title('temporal ensenble: {}, num_queries: {}'.format(config['temporal_agg'], config['num_queries']))
 tag = os.path.split((os.path.split(args.ckpt_path)[0]))[1]
 epoch = os.path.splitext(os.path.basename(args.ckpt_path))[0]
-plt.savefig('./output/{}_{}_{}_{}.png'.format(tag, epoch, mode, idx))
+
+if args.output == 'video':
+    T = len(robot_states)
+    camera_num = len(config['camera_names'])
+    fig, ax = plt.subplots(1, camera_num + 1, figsize=(12, 5), dpi=60)
+    plt.suptitle('temporal ensenble: {}, num_queries: {}'.format(config['temporal_agg'], config['num_queries']))
+    ani = anim.FuncAnimation(fig, anim_update, frames=T)
+    ani.save("./output/{}_{}_{}_{}.mp4".format(tag, epoch, mode, idx), fps=10, writer="ffmpeg")
+else:
+    # plot image
+    plt.xlim(0,nloop - 1)
+    plt.plot(robot_states[1:], linestyle='dashed', c='k')
+    plt.plot(target_qpos[:-1])
+    plt.title('temporal ensenble: {}, num_queries: {}'.format(config['temporal_agg'], config['num_queries']))
+    plt.savefig('./output/{}_{}_{}_{}.png'.format(tag, epoch, mode, idx))
