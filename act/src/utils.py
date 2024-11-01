@@ -49,11 +49,14 @@ class EpisodicDataset(torch.utils.data.Dataset):
                 image_dict[cam_name] = self.images[cam_name][index][start_ts]
         # get all actions after and including start_ts
         if self.is_sim:
-            action = joints[start_ts:]
+            # action = joints[start_ts:]
+            action = joints[start_ts + 1:]
             action_len = episode_len - start_ts
         else:
-            action = joints[max(0, start_ts - 1):] # hack, to make timesteps more aligned
-            action_len = episode_len - max(0, start_ts - 1) # hack, to make timesteps more aligned
+            # action = joints[max(0, start_ts - 1):] # hack, to make timesteps more aligned
+            # action_len = episode_len - max(0, start_ts - 1) # hack, to make timesteps more aligned
+            action = joints[start_ts + 1:] # hack, to make timesteps more aligned
+            action_len = episode_len - (start_ts + 1)
 
         padded_action = np.zeros(original_action_shape, dtype=np.float32)
         padded_action[:action_len] = action
