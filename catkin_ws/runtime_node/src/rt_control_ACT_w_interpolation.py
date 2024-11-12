@@ -190,7 +190,7 @@ class RTControl(Torobo):
             # prediction
             self.all_actions = self.policy(pose_t, img_t)  # [1, query_num, state_dim]
             
-        if self.args['temporal_agg']:
+        if self.config['temporal_agg']:
             self.all_time_actions[[infer_id], infer_id: infer_id + self.config['num_queries']] = self.all_actions
             actions_for_curr_step = self.all_time_actions[:, infer_id] # [inferloop, statedim]
             
