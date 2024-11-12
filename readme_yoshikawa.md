@@ -1,4 +1,4 @@
-### dataset_dir の構造
+### dataset_dir の構造（データセットは正規化前の生データ）
 ```
 dataset_dir/
 ├── train/
