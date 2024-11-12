@@ -2,13 +2,13 @@
 ```
 dataset_dir/
 ├── train/
-│   ├── cam1.npy          # (datanum, step, channel, height, width)
-│   ├── cam2.npy          # (datanum, step, channel, height, width)
+│   ├── cam1.npy          # (datanum, step, height, width, channel)
+│   ├── cam2.npy          # (datanum, step, height, width, channel)
 │   ├── robot_states.npy  # (datanum, step, state_dim)
 │   └── ...               # (datanum, step, feature_dim)
 └── test/
-    ├── cam1.npy          # (datanum, step, channel, height, width)
-    ├── cam2.npy          # (datanum, step, channel, height, width)
+    ├── cam1.npy          # (datanum, step, height, width, channel)
+    ├── cam2.npy          # (datanum, step, height, width, channel)
     ├── robot_states.npy  # (datanum, step, state_dim)
     └── ...               # (datanum, step, feature_dim)
 ```
