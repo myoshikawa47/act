@@ -23,7 +23,7 @@ class EpisodicDataset(torch.utils.data.Dataset):
         self.images = dict()
         for cam_name in self.camera_names:
             self.images[cam_name] = np.load(os.path.join(dataset_path, f'{cam_name}.npy'))
-        self.joints = np.load(os.path.join(dataset_path, 'robot_states.npy')) # TODO
+        self.joints = np.load(os.path.join(dataset_path, 'both_arm_position.npy')) # TODO
         self.len = self.joints.shape[0]
         
         self.__getitem__(0) # initialize self.is_sim
@@ -90,7 +90,7 @@ def get_norm_stats(dataset_dir):
     all_qpos_data = []
     # all_action_data = []
     for mode in ['train', 'test']:
-        qpos = np.load(os.path.join(dataset_dir, mode, 'robot_states.npy')) # TODO
+        qpos = np.load(os.path.join(dataset_dir, mode, 'both_arm_position.npy')) # TODO
         all_qpos_data.append(torch.from_numpy(qpos))
     all_qpos_data = torch.cat((all_qpos_data), dim=0)
 

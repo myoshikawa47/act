@@ -56,7 +56,7 @@ for cam_name in config['camera_names']:
 images = np.array(images)
 print(images.shape)
 episode_len = images.shape[1]
-robot_states = np.load('{}/{}/robot_states.npy'.format(config['dataset_dir'], mode))[idx] # TODO
+robot_states = np.load('{}/{}/both_arm_position.npy'.format(config['dataset_dir'], mode))[idx] # TODO
 robot_state_dim = robot_states.shape[-1] # 4
 
 
