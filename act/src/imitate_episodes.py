@@ -64,7 +64,7 @@ def main(args):
     dataset_dir = args['dataset_dir']
     # num_episodes = None #
     episode_len = args['episode_len']
-    camera_names = ['cam1', 'cam2'] # TODO
+    camera_names = ['head_right_camera', 'left_hand_camera']
     
     # fixed parameters
     state_dim = args['state_dim']
@@ -105,7 +105,11 @@ def main(args):
         'seed': args['seed'],
         'temporal_agg': args['temporal_agg'],
         'real_robot': not is_sim,
-        'device' : device
+        'device' : device,
+        'train_ratio': args['train_ratio'],
+        'shuffle': args['shuffle'],
+        'camera_height': args['camera_height'],
+        'camera_width': args['camera_width'],
     }
 
     config = dict(**policy_config, **_config)
@@ -129,7 +133,17 @@ def main(args):
         exit()
     '''
 
-    train_dataloader, val_dataloader, stats, _ = load_data(dataset_dir, camera_names, batch_size_train, batch_size_val)
+    train_dataloader, val_dataloader, stats, _ = load_data(
+        dataset_dir,
+        camera_names,
+        batch_size_train,
+        batch_size_val,
+        train_ratio=args['train_ratio'],
+        shuffle=args['shuffle'],
+        seed=args['seed'],
+        camera_height=args['camera_height'],
+        camera_width=args['camera_width'],
+    )
 
     # save dataset stats
     stats_path = os.path.join(ckpt_dir, f'dataset_stats.pkl')
@@ -448,12 +462,16 @@ if __name__ == '__main__':
     # parser.add_argument('--eval', action='store_true')
     parser.add_argument('--onscreen_render', action='store_true')
     parser.add_argument('--ckpt_dir', action='store', type=str, help='ckpt_dir', default='./log')
-    parser.add_argument('--dataset_dir', action='store', type=str, help='dataset_dir', default='../../dataset/npy/')
+    parser.add_argument('--dataset_dir', action='store', type=str, help='dataset_dir', default='/home/tnakagawa/work/2026/Turner/dataset/npz')
     parser.add_argument('--episode_len', action='store', type=int, default=1344)
     parser.add_argument('--state_dim', action='store', type=int, default=18)
     parser.add_argument('--policy_class', action='store', type=str, help='policy_class, capitalize', default='ACT')
     parser.add_argument('--task_name', action='store', type=str, help='task_name', default=None)
     parser.add_argument('--batch_size', action='store', type=int, help='batch_size', default=10)
+    parser.add_argument('--train_ratio', action='store', type=float, default=0.8)
+    parser.add_argument('--shuffle', dest='shuffle', action='store_true')
+    parser.add_argument('--no_shuffle', dest='shuffle', action='store_false')
+    parser.set_defaults(shuffle=True)
     parser.add_argument('--seed', action='store', type=int, help='seed', default=0)
     parser.add_argument('--num_epochs', action='store', type=int, help='num_epochs', default=5000)
     parser.add_argument('--lr', action='store', type=float, help='lr', default=1e-5)
@@ -465,5 +483,7 @@ if __name__ == '__main__':
     parser.add_argument('--dim_feedforward', action='store', type=int, help='dim_feedforward', default=3200)
     parser.add_argument('--temporal_agg', action='store_true')
     parser.add_argument('--device', action='store', type=int, default=0)
+    parser.add_argument('--camera_height', action='store', type=int, default=480)
+    parser.add_argument('--camera_width', action='store', type=int, default=640)
     
     main(vars(parser.parse_args()))
