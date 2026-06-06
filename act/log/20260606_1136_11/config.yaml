@@ -1,0 +1,41 @@
+backbone: resnet18
+camera_height: 480
+camera_names: &id001
+- head_right_camera
+- left_hand_camera
+camera_width: 640
+ckpt_dir: ./log/20260606_1136_11
+dataset_dir: /home/tnakagawa/work/2026/Turner/dataset/npz
+dec_layers: 7
+device: cuda:0
+dim_feedforward: 3200
+enc_layers: 4
+episode_len: 1344
+hidden_dim: 512
+kl_weight: 10
+lr: 1.0e-05
+lr_backbone: 1.0e-05
+nheads: 8
+num_epochs: 5000
+num_queries: 100
+onscreen_render: false
+policy_class: ACT
+policy_config:
+  backbone: resnet18
+  camera_names: *id001
+  dec_layers: 7
+  dim_feedforward: 3200
+  enc_layers: 4
+  hidden_dim: 512
+  kl_weight: 10
+  lr: 1.0e-05
+  lr_backbone: 1.0e-05
+  nheads: 8
+  num_queries: 100
+real_robot: true
+seed: 0
+shuffle: true
+state_dim: 18
+task_name: null
+temporal_agg: true
+train_ratio: 0.8
