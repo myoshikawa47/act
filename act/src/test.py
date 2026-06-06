@@ -6,23 +6,15 @@
 #
 
 import os
-import glob
-import sys
 import torch
 import argparse
 import numpy as np
 import matplotlib.pylab as plt
 import matplotlib.animation as anim
 import yaml
-import time
-
-import pickle
-from copy import deepcopy
-from tqdm import tqdm
-from einops import rearrange
 
 from imitate_episodes import make_policy
-from utils import compute_dict_mean, set_seed, detach_dict # helper functions
+from utils import _get_episode_paths, load_npz_episode, split_indices, set_seed
 
 import IPython
 e = IPython.embed
@@ -48,19 +40,36 @@ config['device'] = device
 
 mode = args.mode
 idx = args.idx
+if mode == 'test':
+    mode = 'val'
+if mode not in ('train', 'val'):
+    raise ValueError(f"mode must be 'train', 'val', or 'test', got {args.mode}")
 
-# load dataset
-images = []
-for cam_name in config['camera_names']:
-    images.append(np.load('{}/{}/{}.npy'.format(config['dataset_dir'], mode, cam_name))[idx])
-images = np.array(images)
+episode_paths = _get_episode_paths(config['dataset_dir'])
+train_indices, val_indices = split_indices(
+    len(episode_paths),
+    train_ratio=config.get('train_ratio', 0.8),
+    shuffle=config.get('shuffle', True),
+    seed=config.get('seed', None),
+)
+selected_indices = train_indices if mode == 'train' else val_indices
+if idx < 0 or idx >= len(selected_indices):
+    raise IndexError(f'idx {idx} is out of range for {mode} split of size {len(selected_indices)}')
+
+episode_path = episode_paths[selected_indices[idx]]
+episode = load_npz_episode(
+    episode_path,
+    config['camera_names'],
+    config.get('camera_height', 480),
+    config.get('camera_width', 640),
+)
+
+images = np.stack([episode['camera_images'][cam_name] for cam_name in config['camera_names']], axis=0)
+robot_states = episode['qpos']
 print(images.shape)
-episode_len = images.shape[1]
-robot_states = np.load('{}/{}/both_arm_position.npy'.format(config['dataset_dir'], mode))[idx] # TODO
-robot_state_dim = robot_states.shape[-1] # 4
+episode_len = robot_states.shape[0]
+robot_state_dim = robot_states.shape[-1]
 
-
-# define model
 set_seed(1)
 # command line parameters
 policy_class = config['policy_class']
@@ -89,11 +98,9 @@ target_qpos_list = []
 nloop = episode_len
 with torch.inference_mode():
     for loop_ct in range(nloop):
-        # load data and normalization
-        img_t = images[:,loop_ct].transpose(0, 3, 1, 2)
-        img_t = torch.from_numpy(img_t / 255.0).float().to(device).unsqueeze(0)
-        joint_t = robot_states[loop_ct]
-        joint_t = pre_process(joint_t)
+        img_t = torch.from_numpy(images[:, loop_ct]).permute(0, 3, 1, 2)
+        img_t = (img_t / 255.0).float().to(device).unsqueeze(0)
+        joint_t = pre_process(robot_states[loop_ct])
         joint_t = torch.from_numpy(joint_t).float().to(device).unsqueeze(0)
 
         # prediction
@@ -125,14 +132,12 @@ with torch.inference_mode():
 target_qpos = np.array(target_qpos_list)
 
 
-# plot images
 def anim_update(i):
     for j in range(camera_num + 1):
         ax[j].cla()
 
-    # plot camera image
     for camera_id in range(camera_num):
-        ax[camera_id].imshow(images[camera_id, i, :, :, ::-1])
+        ax[camera_id].imshow(images[camera_id, i])
         ax[camera_id].axis("off")
         ax[camera_id].set_title("{}".format(config['camera_names'][camera_id]))
 
