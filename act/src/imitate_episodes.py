@@ -462,7 +462,7 @@ if __name__ == '__main__':
     # parser.add_argument('--eval', action='store_true')
     parser.add_argument('--onscreen_render', action='store_true')
     parser.add_argument('--ckpt_dir', action='store', type=str, help='ckpt_dir', default='./log')
-    parser.add_argument('--dataset_dir', action='store', type=str, help='dataset_dir', default='/home/tnakagawa/work/2026/Turner/dataset/npz')
+    parser.add_argument('--dataset_dir', action='store', type=str, help='dataset_dir', default='/home/tnakagawa/work/2026/Turner/dataset/npz_org')
     parser.add_argument('--episode_len', action='store', type=int, default=1344)
     parser.add_argument('--state_dim', action='store', type=int, default=18)
     parser.add_argument('--policy_class', action='store', type=str, help='policy_class, capitalize', default='ACT')
