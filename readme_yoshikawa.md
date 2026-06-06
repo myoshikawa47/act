@@ -1,5 +1,6 @@
 ### 環境構築
 
+```
 cd ~/work/2026/Turner/act
 python -m venv .venv
 source .venv/bin/activate
@@ -18,6 +19,7 @@ pip install packaging
 pip install h5py
 pip install ipython
 cd act/src/detr && pip install -e .
+```
 
 ### dataset_dir の構造
 データセットは `dataset_dir` 直下に episode 単位の `npz` を配置します。
