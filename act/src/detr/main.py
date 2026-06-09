@@ -69,6 +69,9 @@ def get_args_parser():
     parser.add_argument("--mode", type=str, default="test") # required for test.py
     parser.add_argument("--idx", type=int, default=1) # required for test.py
     parser.add_argument("--output", choices=('image', 'video'), default='image') # required for test.py
+    parser.add_argument("--playback", action='store_true')
+    parser.add_argument("--exp_time", type=int, default=30)
+    parser.add_argument("--freq", type=int, default=30)
 
     # state_dim and device
     parser.add_argument('--state_dim', action='store', type=int, default=None)
