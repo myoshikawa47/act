@@ -1,0 +1,44 @@
+services:
+  latest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: act-py312:latest
+    container_name: act-py312
+    hostname: act-py312
+
+    network_mode: host
+    ipc: host
+    privileged: true
+
+    stdin_open: true
+    tty: true
+
+    working_dir: /workspace
+
+    environment:
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: "1"
+
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+
+      ROS_MASTER_URI: http://192.168.250.1:11311
+      ROS_IP: 192.168.250.3
+
+    volumes:
+      - .:/workspace/act
+      - ../datasets:/workspace/datasets
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /dev/bus/usb/:/dev/bus/usb/
+      - /dev/dri/:/dev/dri/
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    command: bash
