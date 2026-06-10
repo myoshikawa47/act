@@ -88,14 +88,14 @@ class Deploy(RTCore):
             pub.publish(msg)
 
     def get_observation(self, prev_obs=None, loop_ct=None):
-        lrarm_np = np.concatenate([self.left_arm_cmd_state, self.right_arm_cmd_state], -1)
+        lrarm_np = np.concatenate([self.left_arm_cmd_state, self.right_arm_cmd_state], -1, dtype=np.float32)
         nlrarm_np = self.pre_process(lrarm_np)
         nimgs_list = [] 
         for imgname in ['img_head_right', 'img_arm_left']:
             img = getattr(self, imgname)
             nimg = np.transpose(getattr(self, imgname), (2, 0, 1)) / 255.0
             nimgs_list.append(nimg)
-        nimgs_np = np.np.vstack(nimgs_list)
+        nimgs_np = np.asarray(nimgs_list)
 
         nlrarm = torch.from_numpy(nlrarm_np).unsqueeze(0)
         nimgs = torch.from_numpy(nimgs_np).unsqueeze(0)
@@ -110,7 +110,7 @@ class Deploy(RTCore):
         
         # prediction
         if loop_ct % self.query_frequency == 0:
-            self.all_actions = self.policy(self.get_observation())  # [1, query_num, state_dim]
+            self.all_actions = self.policy(*self.get_observation())  # [1, query_num, state_dim]
             
         # temporal ensembling
         if self.config['temporal_agg']:

@@ -19,7 +19,7 @@ TOPICS = {
         # 'aruco',
         'stereo',
         'lhand',
-        'rhand'
+        # 'rhand'
     ],
 }
 
@@ -33,10 +33,10 @@ CROP_PARAMS = {
         'width': None
     },
     'rhead': {
-        'up': None,
-        'left': None,
-        'height': None,
-        'width': None
+        'up': 120,
+        'left': 120,
+        'height': 195,
+        'width': 420
     },
     'lhand': {
         'up': None,
